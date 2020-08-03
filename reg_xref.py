@@ -1,3 +1,4 @@
+#encoding: utf-8
 """
 Register Cross References by Ori Damari (github.com/repnz)
 """
@@ -106,6 +107,9 @@ def get_register_identifier(register_name):
     if register_name in register_translations:
         register_name = register_translations[register_name]
 
+    if isinstance(register_name, tuple):  # fix: Return tuple occasionally
+        register_name, _num = register_name
+
     return sark.get_register_id(register_name)
 
 
@@ -116,7 +120,10 @@ def run():
         log("Cannot xref registers outside of functions.")
         return
 
-    register_name = idaapi.get_highlighted_identifier()
+    #register_name = idaapi.get_highlighted_identifier()
+    
+    # TypeError: in method 'get_highlight', argument 1 of type 'TWidget *'
+    register_name = idaapi.get_highlighted_identifier(idaapi.get_current_tform()) # ida7.0 must give TWidget*
 
     try:
         register_id = get_register_identifier(register_name)
